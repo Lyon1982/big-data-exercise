@@ -199,3 +199,6 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
+.cache-tests
+.classpath
