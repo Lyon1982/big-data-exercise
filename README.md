@@ -25,4 +25,26 @@
 
 
 
+### Size of Data
+
+I imagine the dataset could be 1000,000x bigger and made the design based on that surmise. 
+
+### Preprocessing
+
+For all three input datasets, there are three optional tasks need to be done in advance:
+
+1. Prune: Remove unneeded columns to save resources.
+2. Validate & Filter: Make sure the values from the needed columns are valid, filter any invalid records out.
+3. Add Calculated Column: For customers a calculated Age column and for bookings a calculated  BookingStayInterval column are required.
+
+So I use a builder strategy(under `com.github.lyon1982.BigDataExercise.builder` package) to make it open for future extension.
+
+### 2 Major Jobs
+
+GroupBy and Join need shuffle and could be expensive for big datasets. I split the work to two major jobs. One is hotel and booking related analysis and the other one is customer and booking related analysis. In this way, one job will only use the data from two datasets and get a better chance to do the work all in memory. You may find those two jobs in `com.github.lyon1982.BigDataExercise.jobs` package.
+
+### Performance Measurement
+
+I'm using an open source library [sparkMeasure](https://github.com/LucaCanali/sparkMeasure) to do the performance measurement rather than implement it with Listeners myself as I don't think I can do a better job than what it does in a tight schedule.
+
 ## Business Value
