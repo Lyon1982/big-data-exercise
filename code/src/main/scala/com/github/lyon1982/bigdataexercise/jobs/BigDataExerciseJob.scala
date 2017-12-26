@@ -5,11 +5,11 @@ import com.github.lyon1982.BigDataExercise.builder.columngen.{BookingStayInterva
 import com.github.lyon1982.BigDataExercise.builder.reader.CSVDataFrameReader
 import com.github.lyon1982.BigDataExercise.builder.validator.{BookingValidator, CustomerValidator, HotelValidator}
 import com.github.lyon1982.BigDataExercise.model.schema.{CustomerSchema, HotelBookingSchema, HotelSchema}
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 
 class BigDataExerciseJob {
 
-  def run()(implicit spark: SparkSession): (Dataset[Row], Dataset[Row], Dataset[Row]) = {
+  def run()(implicit spark: SparkSession): Unit = {
     val bookings = new DataFrameBuilder()
       .addNeededColumns("ClientId", "HotelId", "BookingDate", "StayDate", "StayDuration")
       .setDataValidator(new BookingValidator())
@@ -50,7 +50,18 @@ class BigDataExerciseJob {
       .drop("BookingStayInterval")
       .withColumnRenamed("CustomerAge", "Age/Gender")
 
-    (dataset1, dataset2, dataset3)
+    writeDataframe(dataset1, "/vagrant_app/data/ds1")
+    writeDataframe(dataset2, "/vagrant_app/data/ds2")
+    writeDataframe(dataset3, "/vagrant_app/data/ds3")
+  }
+
+  def writeDataframe(ds: Dataset[Row], path: String)(implicit spark: SparkSession): Unit = {
+    ds
+      .coalesce(1)
+      .write
+      .mode(SaveMode.Overwrite)
+      .option("header", "true")
+      .csv(path)
   }
 
 }

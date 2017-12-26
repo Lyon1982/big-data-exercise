@@ -7,16 +7,12 @@ import org.apache.spark.sql.SparkSession
 object BigDataExerciseAppWithMeasure {
 
   def main(args: Array[String]): Unit = {
-    implicit val spark: SparkSession = SparkSession.builder.appName("Big Data Exercise Application").getOrCreate()
+    implicit val spark: SparkSession = SparkSession.builder.appName("Big Data Exercise Application Measure").getOrCreate()
 
     val stageMetrics = StageMetrics(spark)
     stageMetrics.begin()
 
-    val (dataset1, dataset2, dataset3) = new BigDataExerciseJob().run()
-
-    BigDataExerciseApp.writeDataframe(dataset1, "/vagrant_app/data/ds1")
-    BigDataExerciseApp.writeDataframe(dataset2, "/vagrant_app/data/ds2")
-    BigDataExerciseApp.writeDataframe(dataset3, "/vagrant_app/data/ds3")
+    new BigDataExerciseJob().run()
 
     stageMetrics.end()
     stageMetrics.printReport()
