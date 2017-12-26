@@ -12,9 +12,17 @@
 
 * Go into `/vagrant_app/data` folder and run command `./download-from-s3.sh "<AccessKeyID>" "<AccessKeySecret>"` to retrieve the sample data from S3
 * Go into `/vagrant_app/code` and run `sbt package` to create a jar package
-* Use command `spark-submit --master local[2] --class com.github.lyon1982.BigDataExercise.BigDataExerciseApp target/scala-2.11/bigdataexercise_2.11-0.0.1.jar` to run the job with 2 local thread
-* You can find the expected datasets from `/vagrant_app/data/ds1`, `/vagrant_app/data/ds2` and `/vagrant_app/data/ds3`
+* Use command `spark-submit --master local[2] --class com.github.lyon1982.BigDataExercise.BigDataExerciseApp target/scala-2.11/bigdataexercise_2.11-0.0.1.jar` to run the job with 2 local threads
+* You may find the expected datasets from `/vagrant_app/data/ds1`, `/vagrant_app/data/ds2` and `/vagrant_app/data/ds3`
 
 ## Measure the Job
 
 * Use command `spark-submit --master local[2] --packages ch.cern.sparkmeasure:spark-measure_2.11:0.11 --class com.github.lyon1982.BigDataExercise.BigDataExerciseAppWithMeasure target/scala-2.11/bigdataexercise_2.11-0.0.1.jar` to measure the performance
+
+## Design & Choices
+
+![BDE-Flow](https://github.com/Lyon1982/big-data-exercise/blob/master/docs/BDE-Flow.png?raw=true)
+
+
+
+## Business Value
