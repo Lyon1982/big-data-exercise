@@ -7,7 +7,7 @@ import com.github.lyon1982.BigDataExercise.builder.validator.{BookingValidator, 
 import com.github.lyon1982.BigDataExercise.jobs.CustomerBookingAggregationJob
 import com.github.lyon1982.BigDataExercise.jobs.HotelBookingAggregationJob
 import com.github.lyon1982.BigDataExercise.model.schema.{CustomerSchema, HotelBookingSchema, HotelSchema}
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Dataset, Row, SparkSession}
 
 object BigDataExerciseApp {
 
@@ -21,7 +21,7 @@ object BigDataExerciseApp {
       .create(new CSVDataFrameReader(path = "/vagrant_app/data/hotel_bookings.csv", schema = HotelBookingSchema.schema))
 
     val customers = new DataFrameBuilder()
-      .addNeededColumns("ClientID", "BirthDate", "Gender")
+      .addNeededColumns("ClientId", "BirthDate", "Gender")
       .setDataValidator(new CustomerValidator())
       .appendCustomColumn(new CustomerAgeColumnGenerator(replace = true))
       .create(new CSVDataFrameReader(path = "/vagrant_app/data/customers.csv", schema = CustomerSchema.schema))
@@ -29,7 +29,6 @@ object BigDataExerciseApp {
     val hotels = new DataFrameBuilder()
       .addNeededColumns("HotelId", "City", "Country")
       .setDataValidator(new HotelValidator())
-      .appendCustomColumn(new CustomerAgeColumnGenerator())
       .create(new CSVDataFrameReader(path = "/vagrant_app/data/hotels.csv", schema = HotelSchema.schema))
 
     val (genderGroupedSummary, ageGroupedSummary) = new CustomerBookingAggregationJob().run(bookings.drop("HotelId"), customers)
@@ -37,15 +36,33 @@ object BigDataExerciseApp {
     val (countryGroupedSummary, cityGroupedSummary) = new HotelBookingAggregationJob().run(bookings.drop("ClientID"), hotels)
 
     // Dataset 1: A dataset containing the interval between booking and stay date per customer gender, age and hotel country
-    val dataset1 = genderGroupedSummary.union(ageGroupedSummary).union(countryGroupedSummary).drop("StayDuration")
+    val dataset1 = genderGroupedSummary
+      .union(ageGroupedSummary)
+      .union(countryGroupedSummary)
+      .drop("StayDuration")
+      .withColumnRenamed("CustomerGender", "Gender/Age/Country")
 
     // Dataset 2: A dataset containing the stay length (duration between stay start and stay end) by city and country
-    val dataset2 = cityGroupedSummary.union(countryGroupedSummary).drop("BookingStayInterval")
+    val dataset2 = cityGroupedSummary
+      .union(countryGroupedSummary)
+      .drop("BookingStayInterval")
+      .withColumnRenamed("HotelCity", "City/Country")
 
     // Dataset 3: A dataset containing the stay length by age and gender
-    val dataset3 = ageGroupedSummary.union(genderGroupedSummary).drop("BookingStayInterval")
+    val dataset3 = ageGroupedSummary
+      .union(genderGroupedSummary)
+      .drop("BookingStayInterval")
+      .withColumnRenamed("CustomerAge", "Age/Gender")
+
+    writeDataframe(dataset1, "/vagrant_app/data/ds1")
+    writeDataframe(dataset2, "/vagrant_app/data/ds2")
+    writeDataframe(dataset3, "/vagrant_app/data/ds3")
 
     spark.stop()
+  }
+
+  def writeDataframe(ds: Dataset[Row], path: String)(implicit spark: SparkSession): Unit = {
+    ds.coalesce(1).write.option("header", "true").csv(path)
   }
 
 }

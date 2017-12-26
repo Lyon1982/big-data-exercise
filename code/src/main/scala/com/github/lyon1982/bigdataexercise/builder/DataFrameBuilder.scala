@@ -66,16 +66,12 @@ class DataFrameBuilder {
     var df = reader.read()
 
     // Only use the columns that are needed if specified
-    if (neededColumns.isEmpty) {
-      neededColumns = neededColumns ++ df.columns
-    } else {
-      df.columns.diff(this.neededColumns).foreach(col => df = df.drop(col))
-    }
+    if (!neededColumns.isEmpty) df.columns.diff(this.neededColumns).foreach(col => df = df.drop(col))
 
     // Validate
     // TODO: use coalesce if too many(> 30%) invalid records
     validator.foreach(v => {
-      v.setColumns(neededColumns)
+      v.setColumns(df.columns)
       df = df.filter(v.validate(_))
     })
 
