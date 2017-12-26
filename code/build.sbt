@@ -15,6 +15,7 @@ lazy val root = (project in file(".")).
     coverageHighlighting := true,
     javaOptions ++= Seq("-Xms512M", "-Xmx2048M", "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled"),
     libraryDependencies ++= Seq(
+      "ch.cern.sparkmeasure" %% "spark-measure" % "0.11",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       "com.holdenkarau" %% "spark-testing-base" % "2.2.0_0.7.2" % "test"),
