@@ -32,9 +32,9 @@ object BigDataExerciseApp {
       .appendCustomColumn(new CustomerAgeColumnGenerator())
       .create(new CSVDataFrameReader(path = "/vagrant_app/data/hotels.csv", schema = HotelSchema.schema))
 
-    val (genderGroupedSummary, ageGroupedSummary) = new CustomerBookingAggregationJob().run(bookings, customers)
+    val (genderGroupedSummary, ageGroupedSummary) = new CustomerBookingAggregationJob().run(bookings.drop("HotelId"), customers)
 
-    val (countryGroupedSummary, cityGroupedSummary) = new HotelBookingAggregationJob().run(bookings, hotels)
+    val (countryGroupedSummary, cityGroupedSummary) = new HotelBookingAggregationJob().run(bookings.drop("ClientID"), hotels)
 
     // Dataset 1: A dataset containing the interval between booking and stay date per customer gender, age and hotel country
     val dataset1 = genderGroupedSummary.union(ageGroupedSummary).union(countryGroupedSummary).drop("StayDuration")

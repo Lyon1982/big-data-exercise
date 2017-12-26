@@ -5,7 +5,7 @@ import org.apache.spark.sql.Row
 /**
   * Dataframe data row validator.
   */
-trait Validator {
+trait Validator extends Serializable {
 
   var columns: Seq[String] = Seq()
 
@@ -32,9 +32,9 @@ trait Validator {
   private def returnFalseOnNullOrException = (func: ValidateFunction) => {
     (input: Any) => {
       try {
-        input != null && func.apply(input)
+        input != null && func(input)
       } catch {
-        case e: Throwable => false
+        case _: Throwable => false
       }
     }
   }
@@ -75,7 +75,7 @@ trait Validator {
     row != null && columns.zipWithIndex.foldLeft[Boolean](true)((res, col) => {
       res && (validators.get(col._1) match {
         case None => true
-        case Some(validator) => validator.apply(row.getString(col._2))
+        case Some(validate) => validate(row.get(col._2))
       })
     })
   }

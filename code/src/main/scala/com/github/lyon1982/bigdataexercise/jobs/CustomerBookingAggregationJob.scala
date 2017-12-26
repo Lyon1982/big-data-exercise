@@ -16,18 +16,18 @@ class CustomerBookingAggregationJob {
     // Persist for future calculation
     // TODO: Repartition based on the cluster and actual data size
     val customerBookings = clientGroupedBookings
-      .join(customers, $"ClientId", "inner")
+      .join(customers, clientGroupedBookings("ClientId") === customers("ClientId"), "inner")
       .persist(StorageLevel.MEMORY_ONLY_SER)
 
     // BookingStayInterval and StayDuration Summary by Customer Gender
     val genderGroupedSummary = customerBookings
       .groupBy($"Gender".as("CustomerGender"))
-      .agg(sum("count").as("count"), sum("BookingStayInterval").as("BookingStayInterval"), sum("StayDuration").as("StayDuration"))
+      .agg(sum("count").as("Count"), sum("BookingStayInterval").as("BookingStayInterval"), sum("StayDuration").as("StayDuration"))
 
     // BookingStayInterval and StayDuration Summary by Customer Age
     val ageGroupedSummary = customerBookings
       .groupBy($"Age".as("CustomerAge"))
-      .agg(sum("count").as("count"), sum("BookingStayInterval").as("BookingStayInterval"), sum("StayDuration").as("StayDuration"))
+      .agg(sum("count").as("Count"), sum("BookingStayInterval").as("BookingStayInterval"), sum("StayDuration").as("StayDuration"))
 
     // release resources
     customerBookings.unpersist()
