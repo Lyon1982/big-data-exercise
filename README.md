@@ -48,3 +48,10 @@ GroupBy and Join need shuffle and could be expensive for big datasets. I split t
 I'm using an open source library [sparkMeasure](https://github.com/LucaCanali/sparkMeasure) to do the performance measurement rather than implement it with Listeners myself as I don't think I can do a better job than what it does in a short period of time.
 
 ## Business Value
+
+We can find three import points as below:
+First,stay length by city and country;
+Second,stay length by age and gender;
+Last,the interval between booking and stay date per customer gender,age and hotel country.
+
+We can get the status of the stay length base on age,gender,city and country these four dimensions. Then could update service strategy to meet the requirement in real time.Such as announce special price discount for long stay in the city where most customers stay shortly.According to the last value, we also can update service strategy that provide some special offers to customers who booking more earlier in the country where most customers booking at short intervals,etc.
