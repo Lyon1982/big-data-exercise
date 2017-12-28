@@ -50,8 +50,9 @@ I'm using an open source library [sparkMeasure](https://github.com/LucaCanali/sp
 ## Business Value
 
 We can find three import points as below:
-First,stay length by city and country;
-Second,stay length by age and gender;
-Last,the interval between booking and stay date per customer gender,age and hotel country.
+
+1. Stay length by city and country;
+2. Stay length by age and gender;
+3. The interval between booking and stay date per customer gender,age and hotel country.
 
 We can get the status of the stay length base on age,gender,city and country these four dimensions. Then could update service strategy to meet the requirement in real time.Such as announce special price discount for long stay in the city where most customers stay shortly.According to the last value, we also can update service strategy that provide some special offers to customers who booking more earlier in the country where most customers booking at short intervals,etc.
